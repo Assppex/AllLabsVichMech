@@ -1,0 +1,11 @@
+# vtk DataFile Version 2.0
+2D triangulation data
+ASCII
+
+DATASET  POLYDATA
+POINTS 4 float
+3202.5      270.5 0.00
+2715.6001   0.00 0.00
+4889.3999   0.00 0.00
+4402.5      270.5 0.00
+

@@ -1,0 +1,127 @@
+\documentclass[]{article}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{amsmath}
+\usepackage{amsmath, amsfonts, amssymb, amsthm, mathtools}
+\usepackage[left=20mm, top=15mm, right=15mm, bottom=20mm, nohead, nofoot]{geometry}
+\usepackage{graphicx}
+\usepackage{float}%"Плавающие" картинки
+\usepackage{wrapfig}%Обтекание фигур (таблиц, картинок и прочего)
+\usepackage{listings}
+%opening
+\begin{document}
+	\begin{titlepage}
+		\begin{center}
+			\large Санкт-Петербургский политехнический университет Петра Великого \\
+			\large Физико-механический институт \\
+			\large Высшая школа теоретической механики и математической физики \\[2cm] % [] - отступ
+			\large Направление подготовки \\
+			\large 01.03.03 Механика и математическое моделирование \\[2cm]
+			\LARGE \textbf {Отчёт по лабораторной работе №3} \\[0.5cm]
+			\LARGE \textbf {Тема: "Уравнение Лапласа"} \\[0.5cm]
+			\large Дисциплина "Вычислительная механика" \\[4cm]
+		\end{center}
+		\begin{minipage}{0.25\textwidth} % врезка в половину ширины текста
+			\begin{flushright}
+				\large\textbf{Выполнил:}\\
+				\large Работинский А.Д. \\
+				\large {Группа:} 5030103/10001 \\
+				\large \textbf{Преподаватель:}\\
+				\large Е.Ю. Витохин
+			\end{flushright}
+		\end{minipage}
+		\mbox{}
+		\vfill
+		\begin{center}
+			\large Санкт-Петербург \\
+			\large 2022 
+		\end{center} 
+	\end{titlepage}
+	
+	\newpage
+	\section*{1) Постановка задачи}
+	Решается уравнение Лапласа:
+	$\frac{\partial^2{\text{u}}}{\partial{\text{x}^2}}-\frac{\partial^2{\text{u}}}{\partial{\text{y}^2}}=0$ \\
+	Задача решается для прямоугольника $x \in [0;a] \quad y \in [0;b]$\\
+	Граничные условия: $u(0,y)=\psi_0(y) \quad u(a,y)=\psi_M(y) \quad u(x,0)=\phi_0(x) \quad u(x,b)=\phi_N(x)$\\\\
+	В нашем случае граничные условия имеют следующий вид:\\
+	\mbox{$u(0,y)=20y \quad u(a,y)=30\sqrt{y}(1-y) \quad u(x,0)=0 \quad u(x,b)=20(1-x^2)$}
+	Шаг по пространству: $h=0.1 $ , требуемая точность решения \mbox{$\epsilon=0.01$} \\
+	Так же требуется найти $\omega \quad$, которое позволяет найти решение за наименьшее количество итераций
+	\section*{2)Решение задачи}
+	Конечно-разностные апроксимации получаются схожим образом - из разложения в ряд Тейлора:\\
+	\[u(x_0 + h) = u(x_0) + \frac{h}{1!} u^\prime (x_0) + \frac{h^2}{2!}   u^{\prime \prime} (x_0) + o(h^2)\]
+	\[
+	u(x_0 - h) = u(x_0) - \frac{h}{1!} u^\prime (x_0) + \frac{h^2}{2!} u^{\prime \prime} (x_0) + o(h^2)
+	\]
+	\begin{center}
+		Осталось разрешить систему относительно $u^{\prime \prime} (x_0)$:
+	\end{center}
+	\[
+	u^{\prime \prime} (x_0) = \frac{u(x_0 + h) - 2u(x_0) + u(x_0 -h)}{h^2}
+	\]
+	\begin{center}
+		Разложим в ряд Тейлора функцию перемещений около точки $t_0$:
+	\end{center}
+	\[
+	u(y_0 + h) = u(y_0) + \frac{h}{1!} u' (y_0) + \frac{h^2}{2!}u'' (y_0) + o(h^2)
+	\]
+	\[
+	u(y_0 - h) = u(t_0) - \frac{h}{1!} u' (y_0) + \frac{h^2}{2!} u'' (y_0) + o(h^2)
+	\]
+	\begin{center}
+		Получаем апроксимацию для: $\ddot{u} (t_0)$:\\
+	\end{center}
+	\[
+	u''(y_0) = \frac{u(y_0 + h) - 2u(y_0) + u(y_0 - h)}{h^2}
+	\]\\
+	Введем сетку следующим образом:
+	\begin{center}
+		$x=ih \quad x \in \text{[0;N]}$ 
+		\[t=kh \quad k \in \text{[0;M]}\]			
+	\end{center}
+	Подставляя полученные апроксимации в исходное уравнение, получим:\\
+	\begin{center}
+		\fbox{$u_{i,j}=\frac{1}{4}(u_{i-1,j}+u_{i+1,j}+u_{i,j-1}+u_{i,j+1})$}
+	\end{center}
+	Выражение для начального приближения выглядит аналогично:\\
+	\begin{center}
+		\fbox{$\widetilde{u}_{i,j}=\frac{1}{4}(u_{i-1,j}+u_{i+1,j}+u_{i,j-1}+u_{i,j+1})$}
+	\end{center}
+	Тогда выражение для поля $u \quad$ на следующей итерации получается следующим образом:\\
+	\begin{center}
+		\fbox{$u^{k+1}_{i,j}=u^{k}_{i,j}+\omega(\widetilde{u}_{i,j}-u^{k}_{i,j})$}
+	\end{center}
+	\newpage
+	Где $\omega \text{- коснтанта метода:} \quad \omega=1 \Rightarrow \text{метод Зейделя,} \quad \omega>1 \Rightarrow \text{метод последовательной верхней релаксации,}$\\ $\omega<1 \Rightarrow \text{метод последовательной нижней релаксации} $\\
+	Получившиеся результаты для $\omega \in (0;2) \quad$ представлены ниже:
+	\subsection*{Получившиеся результаты:}
+		\begin{figure}[H]
+		\centering
+		\includegraphics[width=\textwidth]{kol(w)}
+		\caption{График количества итераций от константы метода}
+		\label{pиc1}
+	\end{figure}
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=\textwidth]{tab1}
+		\caption{Таблица кол-ва итераций и соответсвующих им констант метода}
+		\label{pиc2}
+	\end{figure}
+	Отсюда несложно увидеть, что оптимальное $\omega=1.8 \quad \text{и} \quad \omega=1.9$,
+	график решения будет выглядеть следующим образом:
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.8\textwidth]{u}
+		\caption{Зависимость u(x,y)}
+		\label{pиc3}
+	\end{figure}
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.8\textwidth]{tab2}
+		\caption{Таблица u(x,y)}
+		\label{pиc3}
+	\end{figure}
+
+\end{document}
